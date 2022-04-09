@@ -19,10 +19,6 @@ export default function handler(req: NextApiRequest, res:NextApiResponse<Data>){
     default:
       return res.status(400).json({message: 'Metodo no existe'});
   }
-
-  res.status(200).json({
-    message: 'Example'
-  })
 }
 
 const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) =>{
@@ -37,9 +33,15 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) =>{
   const {
     description = entryToUpdate.description,
     status = entryToUpdate.status
-  } = req.query;
-
-  const updatedEntry = await Entry.findByIdAndUpdate(id, { description, status}, { runValidators: true, new: true})
-  await db.disconnect();
-  res.status(200).json(updatedEntry!)
+  } = req.body;
+  try{
+    const updatedEntry = await Entry.findByIdAndUpdate(id, { description, status}, { runValidators: true, new: true})
+   
+    await db.disconnect();
+    res.status(200).json(updatedEntry!)
+  }catch(err: any){
+    await db.disconnect();
+    console.log({err})
+    res.status(400).json({message: err.errors.status.message })
+  }
 }
