@@ -14,14 +14,9 @@ const ENTRIES_INITIAL_STATE: EntriesState = {
 
 export const EntriesProvider:FC = ({children}) => {
   const [state, dispatch] = useReducer(entriesReducer, ENTRIES_INITIAL_STATE);
-  const addNewEntry = (description: string) => {
-    const newEntry: Entry = {
-      _id: uuidv4(),
-      description,
-      createdAt:  Date.now(),
-      status: 'pending'
-    }
-    dispatch({type:'[Entry] Add-Entry', payload: newEntry })
+  const addNewEntry = async(description: string) => {
+    const { data } = await entriesApi.post<Entry>('/entries', { description });
+    dispatch({type:'[Entry] Add-Entry', payload: data })
   }
   const updatedEntry = (entry: Entry) => {
     dispatch({type: '[Entry] Entry-Updated', payload: entry})
