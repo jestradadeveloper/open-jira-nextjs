@@ -14,13 +14,25 @@ export default function handler(req: NextApiRequest, res:NextApiResponse<Data>){
     return res.status(400).json({message: 'El id no es valido'+id});
   }
   switch(req.method){
+    case 'GET':
+      return getEntryById(req, res);
     case 'PUT':
       return updateEntry(req, res);
     default:
       return res.status(400).json({message: 'Metodo no existe'});
   }
 }
-
+const getEntryById = async(req: NextApiRequest, res: NextApiResponse<Data>) =>{
+  const { id } = req.query;
+  await db.connect();
+  const entryToGet = await Entry.findById(id);
+  if (!entryToGet){
+    await db.disconnect();
+    return res.status(400).json({ message: 'No hay entrada con ese id '+id})
+  }
+  await db.disconnect();
+  res.status(200).json(entryToGet)
+}
 const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) =>{
   const { id } = req.query;
   await db.connect();
@@ -28,7 +40,7 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) =>{
   
   if (!entryToUpdate){
     await db.disconnect();
-    return res.status(400).json({message: 'No hay entrada con ese id' + id})
+    return res.status(400).json({message: 'No hay entrada con ese id ' + id})
   }
   const {
     description = entryToUpdate.description,
