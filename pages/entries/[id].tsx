@@ -1,7 +1,11 @@
-import { Card, CardActions, CardContent, CardHeader, Grid, TextField , Button, FormControl} from '@mui/material';
+import { capitalize, Card, CardActions, CardContent, CardHeader, Grid, TextField , Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, IconButton} from '@mui/material';
 import React from 'react'
 import { Layout } from '../../components/layouts';
 import AddCardOutlinedIcon from '@mui/icons-material/AddCardOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { EntryStatus } from '../../interfaces';
+
+const validStatus: EntryStatus[] =  ['pending', 'in-progress', 'finished'];
 export const EntryPage = () => {
   return (
    <Layout title='...'>
@@ -23,7 +27,21 @@ export const EntryPage = () => {
                 label= 'Nueva Entrada'
               />
               <FormControl>
-                
+                <FormLabel> Estado:</FormLabel>
+                <RadioGroup
+                row
+                >
+                  {
+                    validStatus.map(option=>(
+                      <FormControlLabel 
+                        key={option}
+                        value={option}
+                        control={<Radio />}
+                        label={capitalize(option)}
+                      />
+                    ))
+                  }
+                </RadioGroup>
               </FormControl>
             </CardContent>
             <CardActions>
@@ -36,6 +54,16 @@ export const EntryPage = () => {
               </Button>
             </CardActions>
           </Card>
+          <IconButton
+            sx={{
+              position: 'fixed',
+              bottom: 30,
+              right: 30,
+              backgroundColor: 'error.dark' 
+            }}
+          >
+            <DeleteOutlineOutlinedIcon />
+          </IconButton>
        </Grid>
      </Grid>
    </Layout>
