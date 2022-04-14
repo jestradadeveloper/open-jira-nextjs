@@ -1,13 +1,19 @@
-import React, { useState, ChangeEvent, useMemo } from 'react'
+import React, { useState, ChangeEvent, useMemo, FC } from 'react'
+import { GetServerSideProps } from 'next'
 import { capitalize, Card, CardActions, CardContent, CardHeader, Grid, TextField , Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, IconButton} from '@mui/material';
 import { Layout } from '../../components/layouts';
 import AddCardOutlinedIcon from '@mui/icons-material/AddCardOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { EntryStatus } from '../../interfaces';
+import { isValidObjectId } from 'mongoose';
 
 const validStatus: EntryStatus[] =  ['pending', 'in-progress', 'finished'];
-export const EntryPage = () => {
 
+interface Props{
+
+}
+export const EntryPage:FC = (props) => {
+  console.log({props})
   const [inputValue, setInputValue] = useState('');
   const [status, setStatus] = useState<EntryStatus>('pending');
   const [touched, setTouched] = useState(false);
@@ -37,7 +43,7 @@ export const EntryPage = () => {
        <Grid item xs={12} sm={8} md={6}>
           <Card>
             <CardHeader 
-              title='Entrada:'
+              title={`Entrada: ${inputValue}`}
               subheader={`Creada hace: ... minutos`}
             />
             <CardContent>
@@ -100,6 +106,24 @@ export const EntryPage = () => {
      </Grid>
    </Layout>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const { id } = params as {id: string};
+  
+  if (!isValidObjectId(id)){
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    }
+  }
+  return {
+    props: {
+      id
+    }
+  }
 }
 
 export default EntryPage;
