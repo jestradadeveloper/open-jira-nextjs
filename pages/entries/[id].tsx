@@ -39,7 +39,7 @@ export const EntryPage:FC<Props> = ({ entry }) => {
       status,
       description: inputValue
     }
-    updatedEntry(updateEntry);
+    updatedEntry(updateEntry, true);
   }
 
 
