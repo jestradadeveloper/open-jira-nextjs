@@ -9,7 +9,7 @@ import { dbEntries } from '../../database';
 import { Layout } from '../../components/layouts';
 import { Entry, EntryStatus } from '../../interfaces';
 import { dateFunctions } from '../../utils';
-
+import { useRouter } from 'next/router';
 
 const validStatus: EntryStatus[] =  ['pending', 'in-progress', 'finished'];
 
@@ -18,11 +18,11 @@ interface Props{
   entry: Entry
 }
 export const EntryPage:FC<Props> = ({ entry }) => {
-  const { updatedEntry } = useContext(EntriesContext);
+  const { updatedEntry, destroyEntry } = useContext(EntriesContext);
   const [inputValue, setInputValue] = useState(entry.description);
   const [status, setStatus] = useState<EntryStatus>(entry.status);
   const [touched, setTouched] = useState(false);
-
+  const router = useRouter();
   const isNotValid = useMemo(()=> inputValue.length <= 0 && touched,[inputValue, touched])
 
   const onTextFieldChanged = (event: ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +43,13 @@ export const EntryPage:FC<Props> = ({ entry }) => {
     updatedEntry(updateEntry, true);
   }
 
+  const destroyEntryOnClick = () => {
+    const entryToDelete: Entry  = {
+      ...entry
+    }
+    destroyEntry(entryToDelete, true);
+    router.push(`/`);
+  }
 
   return (
    <Layout title={inputValue.substring(0,8)+ '...'} >
@@ -103,16 +110,12 @@ export const EntryPage:FC<Props> = ({ entry }) => {
               </Button>
             </CardActions>
           </Card>
-          <IconButton
-            sx={{
-              position: 'fixed',
-              bottom: 30,
-              right: 30,
-              backgroundColor: 'error.dark' 
-            }}
-          >
-            <DeleteOutlineOutlinedIcon />
-          </IconButton>
+             <Button
+                onClick={ destroyEntryOnClick }
+              >
+                 BOrrar
+              </Button>
+            
        </Grid>
      </Grid>
    </Layout>

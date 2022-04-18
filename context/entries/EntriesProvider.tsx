@@ -46,13 +46,34 @@ export const EntriesProvider:FC = ({children}) => {
   useEffect(() => {
   refreshEntries();
   }, [])
+  
+  const destroyEntry = async({ _id }: Entry, showSnackbar = false) => {
+    try{
+    const { data } = await entriesApi.delete<Entry>(`/entries/${_id}` );
+    dispatch({type: '[Entry] Destroy-Entry'}) ;
+      if(showSnackbar){
+        enqueueSnackbar('Deleted Entry', {
+          variant:'success',
+          autoHideDuration: 1500,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right'
+          }
+        })
+      }
+      refreshEntries();
 
+    }catch(err){
+      console.log(err);
+    }
+  }
   return(
     <EntriesContext.Provider value={{ 
       ...state,
       //Metodos,
       addNewEntry,
       updatedEntry,
+      destroyEntry
     }}>
       {children}
     </EntriesContext.Provider>
